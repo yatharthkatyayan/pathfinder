@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 
 const grid = [];
-let isWall = [];
+//let isWall = [];
 
 let wall_maker = false;
 let start_row = 10;
@@ -25,8 +25,17 @@ function gridMaker() {
 }
 
 function GridBlock(row, col) {
-  return <div className="grid-block" id={`grid-${row}-${col}`}></div>;
+  return (
+    <div
+      className="grid-block"
+      id={`grid-${row}-${col}`}
+      prev_value={null}
+      isWall={false}
+      distance={Infinity}
+    ></div>
+  );
 }
+
 function Color() {
   let x = document.getElementById(`grid-${start_row}-${start_col}`);
   x.classList.add("grid-start");
@@ -88,7 +97,8 @@ class Grid extends Component {
     } else {
       let x = document.getElementById(e.target.id);
       x.classList.add("wall");
-      isWall.push(e.target.id);
+      x.isWall = true;
+      //  console.log(x.isWall, x.id);
       wall_maker = true;
     }
   }
@@ -117,7 +127,8 @@ class Grid extends Component {
         e.target.id !== `grid-${stop_row}-${stop_col}`
       ) {
         x.classList.add("wall");
-        isWall.push(e.target.id);
+        x.isWall = true;
+        //    console.log(x.isWall, x.id);
         wall_maker = false;
       }
     }
