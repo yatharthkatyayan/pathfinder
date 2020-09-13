@@ -25,9 +25,9 @@ let start;
 
 function gridMaker() {
   const grid = [];
-  for (let i = 1; i <= grid_row; i++) {
+  for (let i = 0; i < grid_row; i++) {
     const row = [];
-    for (let j = 1; j <= grid_col; j++) {
+    for (let j = 0; j < grid_col; j++) {
       row.push(GridBlock(i, j));
       //  console.log(Object.isExtensible(row.length - 1));
       //  unvisited_grid.push(GridBlock(i, j));
@@ -152,6 +152,30 @@ function traverseGrid(grid) {
   }
   console.log("traversed");
 } */
+
+function gridChanged(grid, row, col) {
+  const newgrid = grid.slice();
+  if (start_change) {
+    let node = newgrid[start_row][start_col];
+    node.isStart = false;
+    start_col = col;
+    start_row = row;
+    node = newgrid[row][col];
+    node.isStart = true;
+  } else if (stop_change) {
+    let node = newgrid[stop_row][stop_col];
+    node.isFinish = false;
+    stop_col = col;
+    stop_row = row;
+    node = newgrid[row][col];
+    node.isFinish = true;
+  } else {
+    let node = newgrid[row][col];
+    node.isWall = !node.isWall;
+  }
+  return newgrid;
+}
+
 //***********************************************************************************************************//
 class Test extends Component {
   constructor() {
@@ -177,88 +201,47 @@ class Test extends Component {
       }
     }
   }
-
-  handleMouseOver(e) {
-    if (start_change) {
-      let x = document.getElementById(e.target.id);
-      if (x !== null) x.classList.add("grid-start");
-    }
-    if (stop_change) {
-      let x = document.getElementById(e.target.id);
-      if (x !== null) x.classList.add("grid-stop");
-    }
-    if (wall_maker) {
-      if (
-        e.target.id !== `grid-${start_row}-${start_col}` &&
-        e.target.id !== `grid-${stop_row}-${stop_col}`
-      ) {
-        let x = document.getElementById(e.target.id);
-        if (x !== null) {
-          x.classList.add("wall");
-        }
-      }
+*/
+  handleMouseOver(row, col) {
+    if (start_change || stop_change || wall_maker) {
+      const newgrid = gridChanged(this.state.grid, row, col);
+      this.setState({ grid: newgrid });
+      console.log("renedred");
     }
   }
-  */
-  handleMouseDown(e) {
+
+  handleMouseDown(row, col) {
     console.log("down");
-    if (e.target.id == `grid-${start_row}-${start_col}`) {
+    if (row == start_row && col == start_col) {
       start_change = true;
-      let x = document.getElementById(e.target.id);
-      x.classList.remove("grid-start");
-    } else if (e.target.id == `grid-${stop_row}-${stop_col}`) {
+    } else if (row == stop_row && col == stop_col) {
       stop_change = true;
-      let x = document.getElementById(e.target.id);
-      x.classList.remove("grid-stop");
     } else {
-      let x = document.getElementById(e.target.id);
-      if (x !== null) {
-        x.classList.add("wall");
-        x.isWall = true;
-      }
-      //  console.log(x.isWall, x.id);
       wall_maker = true;
+      const newgrid = gridChanged(this.state.grid, row, col);
+      this.setState({ grid: newgrid });
+      console.log(this.state.grid[row][col].isWall);
     }
+    console.log(row, col);
   }
 
-  handleMouseUp(e) {
+  handleMouseUp(row, col) {
+    console.log("up");
     if (start_change) {
-      let i_d = e.target.id;
-      let m = i_d.match(/(\d+)/g);
-      start_row = parseInt(m[0], 10);
-      start_col = parseInt(m[1], 10);
-      //  console.log(start_row, start_col);
       start_change = false;
-      //      Color();
     } else if (stop_change) {
-      let i_d = e.target.id;
-      let m = i_d.match(/(\d+)/g);
-      stop_row = parseInt(m[0], 10);
-      stop_col = parseInt(m[1], 10);
-      //  console.log(stop_row, stop_col);
       stop_change = false;
-      //      Color();
     } else {
-      let x = document.getElementById(e.target.id);
-      if (
-        e.target.id !== `grid-${start_row}-${start_col}` &&
-        e.target.id !== `grid-${stop_row}-${stop_col}`
-      ) {
-        if (x !== null) {
-          x.classList.add("wall");
-          x.isWall = true;
-        }
-        //    console.log(x.isWall, x.id);
-        wall_maker = false;
-      }
+      wall_maker = false;
     }
+    console.log(start_row, start_col);
   }
 
   componentDidMount() {
     //    Color();
     const grid = gridMaker();
     this.setState({ grid });
-    //    this.handleMouseOver();
+    //  this.handleMouseOver();
     //  current_node = document.getElementById(`grid-${stop_row}-${stop_col}`);
   }
 
@@ -313,11 +296,12 @@ class Test extends Component {
                     isStart={isStart}
                     isWall={isWall}
                     // mouseIsPressed={mouseIsPressed}
-                    onMouseDown={this.handleMouseDown}
+                    onMouseDown={(row, col) => this.handleMouseDown(row, col)}
                     /*  onMouseEnter={(row, col) =>
                         this.handleMouseEnter(row, col)
                       } */
-                    //  onMouseUp={() => this.handleMouseUp()}
+                    onMouseOver={(row, col) => this.handleMouseOver(row, col)}
+                    onMouseUp={(row, col) => this.handleMouseUp(row, col)}
                     row={row}
                   ></Node>
                 );

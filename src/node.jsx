@@ -5,7 +5,16 @@ import "./App.css";
 class Node extends Component {
   state = {};
   render() {
-    const { row, col, isWall, isFinish, isStart } = this.props;
+    const {
+      row,
+      col,
+      isWall,
+      isFinish,
+      isStart,
+      onMouseDown,
+      onMouseUp,
+      onMouseOver,
+    } = this.props;
     let extraClassName = "";
     if (isFinish) {
       extraClassName = "grid-stop";
@@ -20,6 +29,9 @@ class Node extends Component {
       <div
         id={`grid-${row}-${col}`}
         className={`grid-block ${extraClassName}`}
+        onMouseDown={() => onMouseDown(row, col)}
+        onMouseUp={() => onMouseUp(row, col)}
+        onMouseOver={() => onMouseOver(row, col)}
       ></div>
     );
   }
