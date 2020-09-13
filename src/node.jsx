@@ -18,11 +18,9 @@ class Node extends Component {
     let extraClassName = "";
     if (isFinish) {
       extraClassName = "grid-stop";
-    }
-    if (isStart) {
+    } else if (isStart) {
       extraClassName = "grid-start";
-    }
-    if (isWall) {
+    } else if (isWall) {
       extraClassName = "wall";
     }
     return (
