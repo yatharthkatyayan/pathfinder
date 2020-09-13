@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
+import Node from "./node.jsx";
 
-const grid = [];
 //let isWall = [];
 /* let gridblock = {
   className: "grid-block",
@@ -24,19 +24,12 @@ let grid_col = 50;
 let start;
 
 function gridMaker() {
+  const grid = [];
   for (let i = 1; i <= grid_row; i++) {
     const row = [];
     for (let j = 1; j <= grid_col; j++) {
-      let x = new GridBlock(
-        `grid-${i}-${j}`,
-        "grid-block",
-        false,
-        null,
-        false,
-        Infinity
-      );
-      row.push(<div className="grid-block">{x}</div>);
-      console.log(Object.isExtensible(row.length - 1));
+      row.push(GridBlock(i, j));
+      //  console.log(Object.isExtensible(row.length - 1));
       //  unvisited_grid.push(GridBlock(i, j));
     }
     grid.push(row);
@@ -46,33 +39,37 @@ function gridMaker() {
   return grid;
 }
 
-function GridBlock(id, className, isvisited, prev_value, isWall, distance) {
-  //  gridblock.id = `grid-${row}-${col}`;
+function GridBlock(r, c) {
+  /* //  gridblock.id = `grid-${row}-${col}`;
   this.id = id;
   this.className = className;
   this.isvisited = isvisited;
   this.prev_value = prev_value;
   this.isWall = isWall;
-  this.distance = distance;
-  /*<div
-      className="grid-block"
-      id={`grid-${row}-${col}`}
-      isvisited={false}
-      prev_value={null}
-      isWall={false}
-      distance={Infinity}
-    ></div> */
+  this.distance = distance; */
+  return {
+    //  className="grid-block"
+    //  id={`grid-${row}-${col}`}
+    row: r,
+    col: c,
+    isStart: r == start_row && c == start_col,
+    isFinish: r == stop_row && c == stop_col,
+    isvisited: false,
+    prev_value: null,
+    isWall: false,
+    distance: Infinity,
+  };
 }
-
+/*
 function Color() {
   let x = document.getElementById(`grid-${start_row}-${start_col}`);
   x.classList.add("grid-start");
   let y = document.getElementById(`grid-${stop_row}-${stop_col}`);
   y.classList.add("grid-stop");
 }
-
+*/
 ///////////////////
-
+/*
 function sortNodesByDistance(unvisited_grid) {
   unvisited_grid.sort((gridA, gridB) => gridA.distance - gridB.distance);
 }
@@ -83,7 +80,8 @@ function updateDis(neighbor, node) {
     n.prev_value = node;
   }
 }
-
+*/
+/*
 function getNeighbor(node) {
   let x = node.id;
   let m = x.match(/(\d+)/g);
@@ -108,8 +106,10 @@ function getNeighbor(node) {
   }
   return neighbor.filter((neighbor) => !neighbor.isvisited);
 }
+*/
+/*
 let VisitedInOrder = [];
-function traverseGrid() {
+function traverseGrid(grid) {
   for (const row of grid) {
     for (const node of row) {
       unvisited_grid.push(node);
@@ -128,10 +128,12 @@ function traverseGrid() {
   console.log(Object.isExtensible("x", x));
   //  console.log("geid-block", Object.isExtensible(gridblock));
   //  console.log(gridblock.isvisited);
-  /* console.log("length : ", unvisited_grid.length);
+  */
+/* console.log("length : ", unvisited_grid.length);
   let i = 0;
   console.log("grid", Object.isExtensible(grid));
   console.log("unvisited_grid", Object.isExtensible(unvisited_grid)); */
+/*
   let i = 0;
   while (!!unvisited_grid.length) {
     sortNodesByDistance(unvisited_grid);
@@ -146,13 +148,18 @@ function traverseGrid() {
     //  node.isvisited = true;
     if (node.id === `grid-${stop_row}-${stop_col}`) break;
     const neighbor = getNeighbor(node);
-    updateDis(neighbor, node); */
+    updateDis(neighbor, node); 
   }
   console.log("traversed");
-}
+} */
 //***********************************************************************************************************//
-class Hope extends Component {
-  state = {};
+class Test extends Component {
+  constructor() {
+    super();
+    this.state = {
+      grid: [],
+    };
+  }
 
   /*  handleMouseOut(e) {
     if (start_change) {
@@ -192,8 +199,9 @@ class Hope extends Component {
       }
     }
   }
-
+  */
   handleMouseDown(e) {
+    console.log("down");
     if (e.target.id == `grid-${start_row}-${start_col}`) {
       start_change = true;
       let x = document.getElementById(e.target.id);
@@ -221,7 +229,7 @@ class Hope extends Component {
       start_col = parseInt(m[1], 10);
       //  console.log(start_row, start_col);
       start_change = false;
-      Color();
+      //      Color();
     } else if (stop_change) {
       let i_d = e.target.id;
       let m = i_d.match(/(\d+)/g);
@@ -229,7 +237,7 @@ class Hope extends Component {
       stop_col = parseInt(m[1], 10);
       //  console.log(stop_row, stop_col);
       stop_change = false;
-      Color();
+      //      Color();
     } else {
       let x = document.getElementById(e.target.id);
       if (
@@ -247,11 +255,13 @@ class Hope extends Component {
   }
 
   componentDidMount() {
-    Color();
-    this.handleMouseOver();
+    //    Color();
+    const grid = gridMaker();
+    this.setState({ grid });
+    //    this.handleMouseOver();
     //  current_node = document.getElementById(`grid-${stop_row}-${stop_col}`);
   }
-  */
+
   ///////////////////
 
   /*****************************************/
@@ -287,21 +297,37 @@ class Hope extends Component {
   /*************************************/
 
   render() {
+    const { grid } = this.state;
     return (
-      <div
-        className="grid button"
-        onMouseDown={this.handleMouseDown}
-        onMouseUp={this.handleMouseUp}
-        onMouseOver={this.handleMouseOver}
-        onMouseOut={this.handleMouseOut}
-      >
-        {gridMaker}
-        <button className="button-style" onClick={this.shortestPath}>
-          click me
-        </button>
+      <div className="grid">
+        {grid.map((row, rowIdx) => {
+          return (
+            <div key={rowIdx}>
+              {row.map((node, nodeIdx) => {
+                const { row, col, isFinish, isStart, isWall } = node;
+                return (
+                  <Node
+                    key={nodeIdx}
+                    col={col}
+                    isFinish={isFinish}
+                    isStart={isStart}
+                    isWall={isWall}
+                    // mouseIsPressed={mouseIsPressed}
+                    onMouseDown={this.handleMouseDown}
+                    /*  onMouseEnter={(row, col) =>
+                        this.handleMouseEnter(row, col)
+                      } */
+                    //  onMouseUp={() => this.handleMouseUp()}
+                    row={row}
+                  ></Node>
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
     );
   }
 }
 
-export default Hope;
+export default Test;
