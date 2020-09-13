@@ -20,6 +20,7 @@ function gridMaker() {
     const row = [];
     for (let j = 0; j < grid_col; j++) {
       row.push(GridBlock(i, j));
+      unvisited_grid.push(GridBlock(i, j));
     }
     grid.push(row);
   }
@@ -74,6 +75,64 @@ function gridChanged(grid, row, col) {
   return newgrid;
 }
 
+/***************************************************************************************************** */
+function sortNodesByDistance(unvisitedNodes) {
+  unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
+}
+
+function updateNeighbor(cur_node, grid) {
+  let neighbor = getNeighbor(cur_node, grid);
+  for (let node of neighbor) {
+    node.distance = cur_node.distance + 1;
+    node.prev_value = cur_node;
+  }
+}
+
+function getNeighbor(node, grid) {
+  let neighbor = [];
+  let r = node.row;
+  let c = node.col;
+  if (r + 1 < grid_row) {
+    neighbor.push(grid[r + 1][c]);
+  }
+  if (c + 1 < grid_col) {
+    neighbor.push(grid[r][c + 1]);
+  }
+  if (r - 1 >= 0) {
+    neighbor.push(grid[r - 1][c]);
+  }
+  if (c - 1 >= 0) {
+    neighbor.push(grid[r][c - 1]);
+  }
+  return neighbor.filter((neighbor) => !neighbor.isvisited);
+}
+
+function shortestPath(startnode, finishnode, grid) {
+  let visitedInOrder = [];
+  startnode.distance = 0;
+  for (let i = 0; i < grid_row; i++) {
+    for (let j = 0; j < grid_col; j++) {
+      unvisited_grid.push(grid[i][j]);
+    }
+  }
+
+  /* for (let i = 0; i < unvisited_grid.length; i++) {
+    console.log(unvisited_grid[i]);
+  } */
+  while (!!unvisited_grid.length) {
+    sortNodesByDistance(unvisited_grid);
+    let cur_node = unvisited_grid.shift();
+    if (cur_node.isWall) continue;
+    // console.log(cur_node.distance);
+    if (cur_node.distance == Infinity) return visitedInOrder;
+    cur_node.isvisited = true;
+    visitedInOrder.push(cur_node);
+    if (cur_node == finishnode) return visitedInOrder;
+    updateNeighbor(cur_node, grid);
+  }
+  return visitedInOrder;
+}
+
 //***********************************************************************************************************//
 class Test extends Component {
   constructor() {
@@ -82,16 +141,65 @@ class Test extends Component {
       grid: [],
     };
   }
+
+  traverse(startnode, finishnode, grid) {
+    let visitedInOrder = shortestPath(startnode, finishnode, grid);
+
+    const nodesInShortestPathOrder = [];
+    let currentNode = finishnode;
+    while (currentNode.prev_value !== null) {
+      nodesInShortestPathOrder.push(currentNode);
+      currentNode = currentNode.prev_value;
+    }
+    /*  for (let i = 0; i < visitedInOrder.length; i++) {
+      let x = visitedInOrder[i];
+      document
+        .getElementById(`grid-${x.row}-${x.col}`)
+        .classList.add("grid-visited");
+    }
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      let x = nodesInShortestPathOrder[i];
+      document
+        .getElementById(`grid-${x.row}-${x.col}`)
+        .classList.add("grid-shortest-path");
+    } */
+    this.animateDijkstra(visitedInOrder, nodesInShortestPathOrder);
+  }
+
+  animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+      if (i === visitedNodesInOrder.length) {
+        setTimeout(() => {
+          this.animateShortestPath(nodesInShortestPathOrder);
+        }, 10 * i);
+        return;
+      }
+      setTimeout(() => {
+        const node = visitedNodesInOrder[i];
+        document.getElementById(`grid-${node.row}-${node.col}`).className =
+          "grid-block grid-visited";
+      }, 10 * i);
+    }
+  }
+
+  animateShortestPath(nodesInShortestPathOrder) {
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      setTimeout(() => {
+        const node = nodesInShortestPathOrder[i];
+        document.getElementById(`grid-${node.row}-${node.col}`).className =
+          "grid-block grid-shortest-path";
+      }, 50 * i);
+    }
+  }
+
   handleMouseOver(row, col) {
     if (start_change || stop_change || wall_maker) {
       const newgrid = gridChanged(this.state.grid, row, col);
       this.setState({ grid: newgrid });
-      console.log("renedred");
     }
   }
 
   handleMouseDown(row, col) {
-    console.log("down");
     if (row == start_row && col == start_col) {
       start_change = true;
     } else if (row == stop_row && col == stop_col) {
@@ -102,11 +210,9 @@ class Test extends Component {
       this.setState({ grid: newgrid });
       console.log(this.state.grid[row][col].isWall);
     }
-    console.log(row, col);
   }
 
   handleMouseUp(row, col) {
-    console.log("up");
     if (start_change) {
       start_change = false;
     } else if (stop_change) {
@@ -125,30 +231,44 @@ class Test extends Component {
   render() {
     const { grid } = this.state;
     return (
-      <div className="grid button">
-        {grid.map((row, rowIdx) => {
-          return (
-            <div key={rowIdx}>
-              {row.map((node, nodeIdx) => {
-                const { row, col, isFinish, isStart, isWall } = node;
-                return (
-                  <Node
-                    key={nodeIdx}
-                    col={col}
-                    isFinish={isFinish}
-                    isStart={isStart}
-                    isWall={isWall}
-                    onMouseDown={(row, col) => this.handleMouseDown(row, col)}
-                    onMouseOver={(row, col) => this.handleMouseOver(row, col)}
-                    onMouseUp={(row, col) => this.handleMouseUp(row, col)}
-                    row={row}
-                  ></Node>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+      <>
+        <button
+          onClick={() =>
+            this.traverse(
+              grid[start_row][start_col],
+              grid[stop_row][stop_col],
+              grid
+            )
+          }
+        >
+          algo
+        </button>
+
+        <div className="grid button">
+          {grid.map((row, rowIdx) => {
+            return (
+              <div key={rowIdx}>
+                {row.map((node, nodeIdx) => {
+                  const { row, col, isFinish, isStart, isWall } = node;
+                  return (
+                    <Node
+                      key={nodeIdx}
+                      col={col}
+                      isFinish={isFinish}
+                      isStart={isStart}
+                      isWall={isWall}
+                      onMouseDown={(row, col) => this.handleMouseDown(row, col)}
+                      onMouseOver={(row, col) => this.handleMouseOver(row, col)}
+                      onMouseUp={(row, col) => this.handleMouseUp(row, col)}
+                      row={row}
+                    ></Node>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </>
     );
   }
 }
