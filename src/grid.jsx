@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Node from "./node.jsx";
-
+import Dijkstra, { dijkstra } from "./dijkstra";
 let wall_maker = false;
 let start_row = 10;
 let stop_row = 10;
@@ -10,9 +10,11 @@ let stop_col = 40;
 let start_change = false;
 let stop_change = false;
 let unvisited_grid = [];
-let grid_row = 20;
-let grid_col = 50;
+let grid_row = 25;
+let grid_col = 60;
 let start;
+
+/*----------------------------------------------- GRID START----------------------------------------------------------------*/
 
 function gridMaker() {
   const grid = [];
@@ -39,8 +41,6 @@ function GridBlock(r, c) {
     distance: Infinity,
   };
 }
-
-///////////////////
 
 function gridChanged(grid, row, col) {
   const newgrid = grid.slice();
@@ -75,62 +75,8 @@ function gridChanged(grid, row, col) {
   return newgrid;
 }
 
-/***************************************************************************************************** */
-function sortNodesByDistance(unvisitedNodes) {
-  unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
-}
+/*--------------------------------------------------  GRID  END -------------------------------------------------------------*/
 
-function updateNeighbor(cur_node, grid) {
-  let neighbor = getNeighbor(cur_node, grid);
-  for (let node of neighbor) {
-    node.distance = cur_node.distance + 1;
-    node.prev_value = cur_node;
-  }
-}
-
-function getNeighbor(node, grid) {
-  let neighbor = [];
-  let r = node.row;
-  let c = node.col;
-  if (r + 1 < grid_row) {
-    neighbor.push(grid[r + 1][c]);
-  }
-  if (c + 1 < grid_col) {
-    neighbor.push(grid[r][c + 1]);
-  }
-  if (r - 1 >= 0) {
-    neighbor.push(grid[r - 1][c]);
-  }
-  if (c - 1 >= 0) {
-    neighbor.push(grid[r][c - 1]);
-  }
-  return neighbor.filter((neighbor) => !neighbor.isvisited);
-}
-
-function shortestPath(startnode, finishnode, grid) {
-  let visitedInOrder = [];
-  startnode.distance = 0;
-  for (let i = 0; i < grid_row; i++) {
-    for (let j = 0; j < grid_col; j++) {
-      unvisited_grid.push(grid[i][j]);
-    }
-  }
-
-  while (!!unvisited_grid.length) {
-    sortNodesByDistance(unvisited_grid);
-    let cur_node = unvisited_grid.shift();
-    if (cur_node.isWall) continue;
-
-    if (cur_node.distance == Infinity) return visitedInOrder;
-    cur_node.isvisited = true;
-    visitedInOrder.push(cur_node);
-    if (cur_node == finishnode) return visitedInOrder;
-    updateNeighbor(cur_node, grid);
-  }
-  return visitedInOrder;
-}
-
-//***********************************************************************************************************//
 class Test extends Component {
   constructor() {
     super();
@@ -139,8 +85,8 @@ class Test extends Component {
     };
   }
 
-  traverse(startnode, finishnode, grid) {
-    let visitedInOrder = shortestPath(startnode, finishnode, grid);
+  traverseDijkstra(startnode, finishnode, grid) {
+    let visitedInOrder = dijkstra(startnode, finishnode, grid);
 
     const nodesInShortestPathOrder = [];
     let currentNode = finishnode;
@@ -149,10 +95,10 @@ class Test extends Component {
       currentNode = currentNode.prev_value;
     }
 
-    this.animateDijkstra(visitedInOrder, nodesInShortestPathOrder);
+    this.animatePath(visitedInOrder, nodesInShortestPathOrder);
   }
 
-  animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+  animatePath(visitedNodesInOrder, nodesInShortestPathOrder) {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
@@ -206,9 +152,8 @@ class Test extends Component {
     } else {
       wall_maker = false;
     }
-    console.log(start_row, start_col);
   }
-
+  /*-----------------------------------------RENDERING START-----------------------------------------------------------------*/
   componentDidMount() {
     const grid = gridMaker();
     this.setState({ grid });
@@ -220,34 +165,40 @@ class Test extends Component {
       <>
         <button
           onClick={() =>
-            this.traverse(
+            this.traverseDijkstra(
               grid[start_row][start_col],
               grid[stop_row][stop_col],
               grid
             )
           }
         >
-          algo
+          Dijkstra
         </button>
 
-        <div className="grid button">
+        <div className="grid button ">
           {grid.map((row, rowIdx) => {
             return (
-              <div key={rowIdx}>
+              <div key={rowIdx} className="col">
                 {row.map((node, nodeIdx) => {
                   const { row, col, isFinish, isStart, isWall } = node;
                   return (
-                    <Node
-                      key={nodeIdx}
-                      col={col}
-                      isFinish={isFinish}
-                      isStart={isStart}
-                      isWall={isWall}
-                      onMouseDown={(row, col) => this.handleMouseDown(row, col)}
-                      onMouseOver={(row, col) => this.handleMouseOver(row, col)}
-                      onMouseUp={(row, col) => this.handleMouseUp(row, col)}
-                      row={row}
-                    ></Node>
+                    <div className="row">
+                      <Node
+                        key={nodeIdx}
+                        col={col}
+                        isFinish={isFinish}
+                        isStart={isStart}
+                        isWall={isWall}
+                        onMouseDown={(row, col) =>
+                          this.handleMouseDown(row, col)
+                        }
+                        onMouseOver={(row, col) =>
+                          this.handleMouseOver(row, col)
+                        }
+                        onMouseUp={(row, col) => this.handleMouseUp(row, col)}
+                        row={row}
+                      ></Node>
+                    </div>
                   );
                 })}
               </div>
@@ -260,3 +211,4 @@ class Test extends Component {
 }
 
 export default Test;
+/*----------------------------------------------RENDERING -------------------------------------------------------------*/

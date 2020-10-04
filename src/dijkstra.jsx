@@ -1,47 +1,60 @@
 import React, { Component } from "react";
 import "./App.css";
-import Node from "./node.jsx";
 
-const grid = [];
-
-let wall_maker = false;
-let start_row = 10;
-let stop_row = 10;
-let start_col = 10;
-let stop_col = 40;
-let start_change = false;
-let stop_change = false;
-let unvisited_grid = [];
 let grid_row = 20;
 let grid_col = 50;
-let start;
 
-//***********************************************************************************************************//
-class Hope extends Component {
-  state = {};
+function sortNodesByDistance(unvisitedNodes) {
+  unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
+}
 
-  /*****************************************/
-  /*  shortestPath() {
-    console.log("hi");
-    console.log("x", Object.isExtensible(x));
-  } */
-  /*************************************/
-
-  render() {
-    return (
-      <div
-        className="grid button"
-        onMouseDown={this.handleMouseDown}
-        onMouseUp={this.handleMouseUp}
-        onMouseOver={this.handleMouseOver}
-        onMouseOut={this.handleMouseOut}
-      >
-        <button className="button-style" onClick={this.shortestPath}>
-          click me
-        </button>
-      </div>
-    );
+function updateNeighbor(cur_node, grid) {
+  let neighbor = getNeighbor(cur_node, grid);
+  for (let node of neighbor) {
+    node.distance = cur_node.distance + 1;
+    node.prev_value = cur_node;
   }
 }
 
-export default Hope;
+function getNeighbor(node, grid) {
+  let neighbor = [];
+  let r = node.row;
+  let c = node.col;
+  if (r + 1 < grid_row) {
+    neighbor.push(grid[r + 1][c]);
+  }
+  if (c + 1 < grid_col) {
+    neighbor.push(grid[r][c + 1]);
+  }
+  if (r - 1 >= 0) {
+    neighbor.push(grid[r - 1][c]);
+  }
+  if (c - 1 >= 0) {
+    neighbor.push(grid[r][c - 1]);
+  }
+  return neighbor.filter((neighbor) => !neighbor.isvisited);
+}
+
+export function dijkstra(startnode, finishnode, grid) {
+  let visitedInOrder = [];
+  let unvisited_grid = [];
+  startnode.distance = 0;
+  for (let i = 0; i < grid_row; i++) {
+    for (let j = 0; j < grid_col; j++) {
+      unvisited_grid.push(grid[i][j]);
+    }
+  }
+
+  while (!!unvisited_grid.length) {
+    sortNodesByDistance(unvisited_grid);
+    let cur_node = unvisited_grid.shift();
+    if (cur_node.isWall) continue;
+
+    if (cur_node.distance == Infinity) return visitedInOrder;
+    cur_node.isvisited = true;
+    visitedInOrder.push(cur_node);
+    if (cur_node == finishnode) return visitedInOrder;
+    updateNeighbor(cur_node, grid);
+  }
+  return visitedInOrder;
+}

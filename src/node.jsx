@@ -26,7 +26,7 @@ class Node extends Component {
     return (
       <div
         id={`grid-${row}-${col}`}
-        className={`grid-block ${extraClassName}`}
+        className={`grid-block  ${extraClassName}`}
         onMouseDown={() => onMouseDown(row, col)}
         onMouseUp={() => onMouseUp(row, col)}
         onMouseOver={() => onMouseOver(row, col)}

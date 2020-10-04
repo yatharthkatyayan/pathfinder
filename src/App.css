@@ -71,7 +71,16 @@
   width: 25px;
   height: 25px;
   outline: 1px solid rgb(175, 216, 248);
+}
+
+.row {
   display: inline-block;
+}
+.col {
+  display: flex;
+  flex-direction: row;
+  margin-top: 0%;
+  margin-bottom: 0%;
 }
 /*
 .grid-block {
@@ -102,12 +111,7 @@
 }
 
 .grid {
-  display: inline-block;
-  margin: 0px;
-  text-align: center;
-  padding-top: 0%;
-  grid-row: auto;
-  height: fit-content;
+  margin: 100, 0, 0;
 }
 
 .button-style {
