@@ -78,7 +78,7 @@ function gridChanged(grid, row, col) {
 
 /*--------------------------------------------------  GRID  END -------------------------------------------------------------*/
 
-class Test extends Component {
+class Grid extends Component {
   constructor() {
     super();
     this.state = {
@@ -144,6 +144,11 @@ class Test extends Component {
     }
   }
 
+  clearBorad() {
+    const newgrid = gridMaker();
+    this.setState({ grid: newgrid });
+  }
+
   handleMouseOver(row, col) {
     if (start_change || stop_change || wall_maker) {
       const newgrid = gridChanged(this.state.grid, row, col);
@@ -160,11 +165,10 @@ class Test extends Component {
       wall_maker = true;
       const newgrid = gridChanged(this.state.grid, row, col);
       this.setState({ grid: newgrid });
-      console.log(this.state.grid[row][col].isWall);
     }
   }
 
-  handleMouseUp(row, col) {
+  handleMouseUp() {
     if (start_change) {
       start_change = false;
     } else if (stop_change) {
@@ -210,7 +214,7 @@ class Test extends Component {
         >
           A*
         </button>
-
+        <button onClick={() => this.clearBorad()}>clear grid</button>
         <div className="grid button ">
           {grid.map((row, rowIdx) => {
             return (
@@ -246,5 +250,5 @@ class Test extends Component {
   }
 }
 
-export default Test;
+export default Grid;
 /*----------------------------------------------RENDERING -------------------------------------------------------------*/
