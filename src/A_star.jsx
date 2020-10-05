@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
 
-function sortNodesByDistance(unvisitedNodes) {
-  unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
-}
-
 function updateNeighbor(cur_node, grid, grid_row, grid_col) {
   let neighbor = getNeighbor(cur_node, grid, grid_row, grid_col);
   for (let node of neighbor) {
@@ -15,7 +11,7 @@ function updateNeighbor(cur_node, grid, grid_row, grid_col) {
 
 function getNeighbor(node, grid, grid_row, grid_col) {
   let neighbor = [];
-  console.log(grid_row, grid_col);
+
   let r = node.row;
   let c = node.col;
   if (r + 1 < grid_row) {
@@ -33,7 +29,7 @@ function getNeighbor(node, grid, grid_row, grid_col) {
   return neighbor.filter((neighbor) => !neighbor.isvisited);
 }
 
-export function dijkstra(startnode, finishnode, grid, grid_row, grid_col) {
+export function Astar(startnode, finishnode, grid, grid_row, grid_col) {
   let visitedInOrder = [];
   let unvisited_grid = [];
   startnode.distance = 0;
@@ -44,11 +40,30 @@ export function dijkstra(startnode, finishnode, grid, grid_row, grid_col) {
   }
 
   while (!!unvisited_grid.length) {
-    sortNodesByDistance(unvisited_grid);
-    let cur_node = unvisited_grid.shift();
+    let cur_node;
+    let min_heuristic = Infinity;
+    let min_total_distance = Infinity;
+    for (let i = 0; i < unvisited_grid.length; i++) {
+      let temp_heuristic =
+        Math.abs(unvisited_grid[i].row - finishnode.row) +
+        Math.abs(unvisited_grid[i].col - finishnode.col);
+      if (unvisited_grid[i].distance + temp_heuristic < min_total_distance) {
+        min_total_distance = unvisited_grid[i].distance + temp_heuristic;
+        cur_node = unvisited_grid[i];
+      }
+      if (unvisited_grid[i].distance + temp_heuristic == min_total_distance) {
+        if (temp_heuristic < min_heuristic) {
+          min_heuristic = temp_heuristic;
+          cur_node = unvisited_grid[i];
+        }
+      }
+    }
+    let index = unvisited_grid.indexOf(cur_node);
+    unvisited_grid.splice(index, 1);
+
     if (cur_node.isWall) continue;
 
-    if (cur_node.distance == Infinity) break;
+    if (cur_node.distance == Infinity) return visitedInOrder;
     cur_node.isvisited = true;
     visitedInOrder.push(cur_node);
     if (cur_node == finishnode) {
@@ -58,6 +73,5 @@ export function dijkstra(startnode, finishnode, grid, grid_row, grid_col) {
     }
     updateNeighbor(cur_node, grid, grid_row, grid_col);
   }
-
   return visitedInOrder;
 }

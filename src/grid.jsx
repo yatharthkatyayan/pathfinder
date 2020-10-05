@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import Node from "./node.jsx";
 import Dijkstra, { dijkstra } from "./dijkstra";
+import { Astar } from "./A_star";
 let wall_maker = false;
 let start_row = 10;
 let stop_row = 10;
@@ -86,7 +87,13 @@ class Test extends Component {
   }
 
   traverseDijkstra(startnode, finishnode, grid) {
-    let visitedInOrder = dijkstra(startnode, finishnode, grid);
+    let visitedInOrder = dijkstra(
+      startnode,
+      finishnode,
+      grid,
+      grid_row,
+      grid_col
+    );
 
     const nodesInShortestPathOrder = [];
     let currentNode = finishnode;
@@ -94,7 +101,20 @@ class Test extends Component {
       nodesInShortestPathOrder.push(currentNode);
       currentNode = currentNode.prev_value;
     }
+    nodesInShortestPathOrder.shift();
+    this.animatePath(visitedInOrder, nodesInShortestPathOrder);
+  }
 
+  traverse_Astar(startnode, finishnode, grid) {
+    let visitedInOrder = Astar(startnode, finishnode, grid, grid_row, grid_col);
+
+    const nodesInShortestPathOrder = [];
+    let currentNode = finishnode;
+    while (currentNode.prev_value !== null) {
+      nodesInShortestPathOrder.push(currentNode);
+      currentNode = currentNode.prev_value;
+    }
+    nodesInShortestPathOrder.shift();
     this.animatePath(visitedInOrder, nodesInShortestPathOrder);
   }
 
@@ -168,11 +188,27 @@ class Test extends Component {
             this.traverseDijkstra(
               grid[start_row][start_col],
               grid[stop_row][stop_col],
-              grid
+              grid,
+              grid_row,
+              grid_col
             )
           }
         >
           Dijkstra
+        </button>
+
+        <button
+          onClick={() =>
+            this.traverse_Astar(
+              grid[start_row][start_col],
+              grid[stop_row][stop_col],
+              grid,
+              grid_row,
+              grid_col
+            )
+          }
+        >
+          A*
         </button>
 
         <div className="grid button ">
