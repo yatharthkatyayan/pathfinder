@@ -144,8 +144,21 @@ class Grid extends Component {
     }
   }
 
-  clearBorad() {
-    const newgrid = gridMaker();
+  clearBoard(grid) {
+    const newgrid = grid.slice();
+    for (let i = 0; i < grid_row; i++) {
+      for (let j = 0; j < grid_col; j++) {
+        let x = grid[i][j];
+        let y = document.getElementById(`grid-${x.row}-${x.col}`);
+        y.classList.remove("grid-shortest-path");
+        y.classList.remove("grid-visited");
+        x.isWall = false;
+        y.isWall = false;
+        x.isvisited = false;
+        x.prev_value = null;
+        x.distance = Infinity;
+      }
+    }
     this.setState({ grid: newgrid });
   }
 
@@ -214,7 +227,7 @@ class Grid extends Component {
         >
           A*
         </button>
-        <button onClick={() => this.clearBorad()}>clear grid</button>
+        <button onClick={() => this.clearBoard(grid)}>clear grid</button>
         <div className="grid button ">
           {grid.map((row, rowIdx) => {
             return (
