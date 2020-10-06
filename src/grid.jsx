@@ -200,34 +200,40 @@ class Grid extends Component {
     const { grid } = this.state;
     return (
       <>
-        <button
-          onClick={() =>
-            this.traverseDijkstra(
-              grid[start_row][start_col],
-              grid[stop_row][stop_col],
-              grid,
-              grid_row,
-              grid_col
-            )
-          }
-        >
-          Dijkstra
-        </button>
+        <div className="topnav">
+          <a
+            href="#"
+            onClick={() =>
+              this.traverseDijkstra(
+                grid[start_row][start_col],
+                grid[stop_row][stop_col],
+                grid,
+                grid_row,
+                grid_col
+              )
+            }
+          >
+            Dijkstra
+          </a>
+          <a
+            href="#"
+            onClick={() =>
+              this.traverse_Astar(
+                grid[start_row][start_col],
+                grid[stop_row][stop_col],
+                grid,
+                grid_row,
+                grid_col
+              )
+            }
+          >
+            A star
+          </a>
+          <a href="#" onClick={() => this.clearBoard(grid)}>
+            clear grid
+          </a>
+        </div>
 
-        <button
-          onClick={() =>
-            this.traverse_Astar(
-              grid[start_row][start_col],
-              grid[stop_row][stop_col],
-              grid,
-              grid_row,
-              grid_col
-            )
-          }
-        >
-          A*
-        </button>
-        <button onClick={() => this.clearBoard(grid)}>clear grid</button>
         <div className="grid button ">
           {grid.map((row, rowIdx) => {
             return (
