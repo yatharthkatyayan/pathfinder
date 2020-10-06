@@ -72,6 +72,9 @@
   height: 25px;
   outline: 1px solid rgb(175, 216, 248);
 }
+.position {
+  height: 100vh;
+}
 
 .row {
   display: inline-block;
@@ -110,16 +113,13 @@
   background-color: green;
 }
 
-.grid {
-  margin: 100, 0, 0;
-}
-
 .button-style {
   size: 20px;
 }
 .topnav {
   background-color: #333;
   overflow: hidden;
+  width: 100%;
 }
 
 .topnav a {

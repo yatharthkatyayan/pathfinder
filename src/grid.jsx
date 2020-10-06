@@ -199,7 +199,37 @@ class Grid extends Component {
   render() {
     const { grid } = this.state;
     return (
-      <>
+      <div className="position">
+        <div className="grid button ">
+          {grid.map((row, rowIdx) => {
+            return (
+              <div key={rowIdx} className="col">
+                {row.map((node, nodeIdx) => {
+                  const { row, col, isFinish, isStart, isWall } = node;
+                  return (
+                    <div className="row">
+                      <Node
+                        key={nodeIdx}
+                        col={col}
+                        isFinish={isFinish}
+                        isStart={isStart}
+                        isWall={isWall}
+                        onMouseDown={(row, col) =>
+                          this.handleMouseDown(row, col)
+                        }
+                        onMouseOver={(row, col) =>
+                          this.handleMouseOver(row, col)
+                        }
+                        onMouseUp={(row, col) => this.handleMouseUp(row, col)}
+                        row={row}
+                      ></Node>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
         <div className="topnav">
           <a
             href="#"
@@ -233,38 +263,7 @@ class Grid extends Component {
             clear grid
           </a>
         </div>
-
-        <div className="grid button ">
-          {grid.map((row, rowIdx) => {
-            return (
-              <div key={rowIdx} className="col">
-                {row.map((node, nodeIdx) => {
-                  const { row, col, isFinish, isStart, isWall } = node;
-                  return (
-                    <div className="row">
-                      <Node
-                        key={nodeIdx}
-                        col={col}
-                        isFinish={isFinish}
-                        isStart={isStart}
-                        isWall={isWall}
-                        onMouseDown={(row, col) =>
-                          this.handleMouseDown(row, col)
-                        }
-                        onMouseOver={(row, col) =>
-                          this.handleMouseOver(row, col)
-                        }
-                        onMouseUp={(row, col) => this.handleMouseUp(row, col)}
-                        row={row}
-                      ></Node>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-      </>
+      </div>
     );
   }
 }
