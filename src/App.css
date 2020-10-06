@@ -70,7 +70,10 @@
 .grid-block {
   width: 25px;
   height: 25px;
-  outline: 1px solid rgb(175, 216, 248);
+}
+.grid-outline {
+  outline: 1px solid;
+  outline-color: rgb(175, 216, 248);
 }
 .position {
   height: 100vh;

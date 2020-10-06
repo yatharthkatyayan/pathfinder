@@ -15,7 +15,7 @@ class Node extends Component {
       onMouseUp,
       onMouseOver,
     } = this.props;
-    let extraClassName = "";
+    let extraClassName = "grid-outline";
     if (isFinish) {
       extraClassName = "grid-stop";
     } else if (isStart) {

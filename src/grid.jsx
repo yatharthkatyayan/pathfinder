@@ -71,6 +71,8 @@ function gridChanged(grid, row, col) {
     } else {
       let node = newgrid[row][col];
       node.isWall = !node.isWall;
+      let y = document.getElementById(`grid-${node.row}-${node.col}`);
+      y.classList.remove("grid-outline");
     }
   }
   return newgrid;
@@ -152,6 +154,7 @@ class Grid extends Component {
         let y = document.getElementById(`grid-${x.row}-${x.col}`);
         y.classList.remove("grid-shortest-path");
         y.classList.remove("grid-visited");
+        y.classList.add("grid-outline");
         x.isWall = false;
         y.isWall = false;
         x.isvisited = false;
