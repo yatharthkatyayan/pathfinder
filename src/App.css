@@ -77,9 +77,10 @@
 }
 .position {
   position: absolute;
-  margin-top: -10px;
-  margin-left: -10px;
   height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .row {
@@ -91,7 +92,7 @@
   margin-top: 0%;
   margin-bottom: 0%;
 }
-/*
+/***
 .grid-block {
   margin-bottom: -4px;
   display: inline-block;
@@ -103,7 +104,7 @@
   grid-row: auto;
   height: fit-content;
 }
-*/
+***/
 .button {
   user-select: none;
   -moz-user-select: none;
