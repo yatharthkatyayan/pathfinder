@@ -77,9 +77,10 @@
 }
 .position {
   position: absolute;
-  margin-top: -10px;
-  margin-left: -10px;
   height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .row {
