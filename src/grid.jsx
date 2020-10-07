@@ -3,6 +3,7 @@ import "./App.css";
 import Node from "./node.jsx";
 import Dijkstra, { dijkstra } from "./dijkstra";
 import { Astar } from "./A_star";
+import { swarm } from "./swarm";
 let wall_maker = false;
 let start_row = 10;
 let stop_row = 10;
@@ -11,9 +12,9 @@ let stop_col = 40;
 let start_change = false;
 let stop_change = false;
 let unvisited_grid = [];
-let grid_row = 25;
-let grid_col = 60;
-let start;
+let grid_row = 20;
+let grid_col = 50;
+let nav_height = 0;
 
 /*----------------------------------------------- GRID START----------------------------------------------------------------*/
 
@@ -106,6 +107,18 @@ class Grid extends Component {
     nodesInShortestPathOrder.shift();
     this.animatePath(visitedInOrder, nodesInShortestPathOrder);
   }
+  traverseSwarm(startnode, finishnode, grid) {
+    let visitedInOrder = swarm(startnode, finishnode, grid, grid_row, grid_col);
+
+    const nodesInShortestPathOrder = [];
+    let currentNode = finishnode;
+    while (currentNode.prev_value !== null) {
+      nodesInShortestPathOrder.push(currentNode);
+      currentNode = currentNode.prev_value;
+    }
+    nodesInShortestPathOrder.shift();
+    this.animatePath(visitedInOrder, nodesInShortestPathOrder);
+  }
 
   traverse_Astar(startnode, finishnode, grid) {
     let visitedInOrder = Astar(startnode, finishnode, grid, grid_row, grid_col);
@@ -147,6 +160,9 @@ class Grid extends Component {
   }
 
   clearBoard(grid) {
+    console.log(grid_row, grid_col);
+    console.log(window.innerWidth, window.innerHeight);
+
     const newgrid = grid.slice();
     for (let i = 0; i < grid_row; i++) {
       for (let j = 0; j < grid_col; j++) {
@@ -195,7 +211,12 @@ class Grid extends Component {
   }
   /*-----------------------------------------RENDERING START-----------------------------------------------------------------*/
   componentDidMount() {
+    nav_height = document.getElementById("nav").clientHeight;
+    grid_row = Math.floor((window.innerHeight - nav_height) / 25);
+    grid_col = Math.floor(window.innerWidth / 25);
+
     const grid = gridMaker();
+
     this.setState({ grid });
   }
 
@@ -203,7 +224,7 @@ class Grid extends Component {
     const { grid } = this.state;
     return (
       <div className="position">
-        <div className="topnav">
+        <div className="topnav" id="nav">
           <a
             href="#"
             onClick={() =>
@@ -232,6 +253,20 @@ class Grid extends Component {
           >
             A star
           </a>
+          <a
+            href="#"
+            onClick={() =>
+              this.traverseSwarm(
+                grid[start_row][start_col],
+                grid[stop_row][stop_col],
+                grid,
+                grid_row,
+                grid_col
+              )
+            }
+          >
+            Swarm
+          </a>
           <a href="#" onClick={() => this.clearBoard(grid)}>
             clear grid
           </a>
@@ -240,31 +275,29 @@ class Grid extends Component {
         <div className="grid button ">
           {grid.map((row, rowIdx) => {
             return (
-              <div className="bsb">
-                <div key={rowIdx} className="col">
-                  {row.map((node, nodeIdx) => {
-                    const { row, col, isFinish, isStart, isWall } = node;
-                    return (
-                      <div className="row">
-                        <Node
-                          key={nodeIdx}
-                          col={col}
-                          isFinish={isFinish}
-                          isStart={isStart}
-                          isWall={isWall}
-                          onMouseDown={(row, col) =>
-                            this.handleMouseDown(row, col)
-                          }
-                          onMouseOver={(row, col) =>
-                            this.handleMouseOver(row, col)
-                          }
-                          onMouseUp={(row, col) => this.handleMouseUp(row, col)}
-                          row={row}
-                        ></Node>
-                      </div>
-                    );
-                  })}
-                </div>
+              <div key={rowIdx} className="col">
+                {row.map((node, nodeIdx) => {
+                  const { row, col, isFinish, isStart, isWall } = node;
+                  return (
+                    <div className="row">
+                      <Node
+                        key={nodeIdx}
+                        col={col}
+                        isFinish={isFinish}
+                        isStart={isStart}
+                        isWall={isWall}
+                        onMouseDown={(row, col) =>
+                          this.handleMouseDown(row, col)
+                        }
+                        onMouseOver={(row, col) =>
+                          this.handleMouseOver(row, col)
+                        }
+                        onMouseUp={(row, col) => this.handleMouseUp(row, col)}
+                        row={row}
+                      ></Node>
+                    </div>
+                  );
+                })}
               </div>
             );
           })}
