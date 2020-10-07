@@ -76,6 +76,9 @@
   outline-color: rgb(175, 216, 248);
 }
 .position {
+  position: absolute;
+  margin-top: -10px;
+  margin-left: -10px;
   height: 100vh;
 }
 
@@ -120,6 +123,9 @@
   size: 20px;
 }
 .topnav {
+  position: relative;
+  margin-top: 0px;
+  margin-left: 0px;
   background-color: #333;
   overflow: hidden;
   width: 100%;
