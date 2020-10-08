@@ -15,7 +15,7 @@ function updateNeighbor(cur_node, grid, grid_row, grid_col) {
 
 function getNeighbor(node, grid, grid_row, grid_col) {
   let neighbor = [];
-  console.log(grid_row, grid_col);
+
   let r = node.row;
   let c = node.col;
   if (r + 1 < grid_row) {

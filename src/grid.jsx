@@ -97,7 +97,6 @@ class Grid extends Component {
 
   traverseDijkstra(startnode, finishnode, grid) {
     if (animation_working === false) {
-      console.log("d");
       this.clearPath(this.state.grid);
       animation_working = true;
       this.linkdisabler(grid);
@@ -121,7 +120,6 @@ class Grid extends Component {
   }
   traverseSwarm(startnode, finishnode, grid) {
     if (animation_working === false) {
-      console.log("s");
       this.clearPath(this.state.grid);
       animation_working = true;
       this.linkdisabler(grid);
@@ -146,7 +144,6 @@ class Grid extends Component {
 
   traverse_Astar(startnode, finishnode, grid) {
     if (animation_working === false) {
-      console.log("a");
       this.clearPath(this.state.grid);
       animation_working = true;
       this.linkdisabler(grid);
@@ -258,7 +255,7 @@ class Grid extends Component {
       clear_grid = <s>clear grid</s>;
       clear_path = <s>clear path</s>;
     }
-    console.log("hi");
+
     this.setState({ dijkstra_variable: d_variable });
     this.setState({ astar_variable: a_variable });
     this.setState({ swarm_variable: s_variable });
