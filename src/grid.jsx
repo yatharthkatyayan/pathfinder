@@ -96,6 +96,7 @@ class Grid extends Component {
   }
 
   traverseDijkstra(startnode, finishnode, grid) {
+    this.setState({ open: false });
     if (animation_working === false) {
       this.clearPath(this.state.grid);
       animation_working = true;
@@ -119,6 +120,7 @@ class Grid extends Component {
     }
   }
   traverseSwarm(startnode, finishnode, grid) {
+    this.setState({ open: false });
     if (animation_working === false) {
       this.clearPath(this.state.grid);
       animation_working = true;
@@ -143,6 +145,7 @@ class Grid extends Component {
   }
 
   traverse_Astar(startnode, finishnode, grid) {
+    this.setState({ open: false });
     if (animation_working === false) {
       this.clearPath(this.state.grid);
       animation_working = true;
