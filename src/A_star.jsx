@@ -63,7 +63,10 @@ export function Astar(startnode, finishnode, grid, grid_row, grid_col) {
 
     if (cur_node.isWall) continue;
 
-    if (cur_node.distance == Infinity) return visitedInOrder;
+    if (cur_node.distance == Infinity) {
+      visitedInOrder.shift();
+      break;
+    }
     cur_node.isvisited = true;
     visitedInOrder.push(cur_node);
     if (cur_node == finishnode) {

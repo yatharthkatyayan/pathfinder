@@ -16,9 +16,10 @@ let grid_row = 20;
 let grid_col = 50;
 let nav_height = 0;
 let animation_working = false;
-let dijkstra_variable;
+/* let dijkstra_variable;
 let astar_variable;
 let swarm_variable;
+*/
 /*----------------------------------------------- GRID START----------------------------------------------------------------*/
 
 function gridMaker() {
@@ -48,38 +49,40 @@ function GridBlock(r, c) {
 }
 
 function gridChanged(grid, row, col) {
-  const newgrid = grid.slice();
-  if (start_change) {
-    if (row == stop_row && col == stop_col) {
+  if (animation_working === false) {
+    const newgrid = grid.slice();
+    if (start_change) {
+      if (row == stop_row && col == stop_col) {
+      } else {
+        let node = newgrid[start_row][start_col];
+        node.isStart = false;
+        start_col = col;
+        start_row = row;
+        node = newgrid[row][col];
+        node.isStart = true;
+      }
+    } else if (stop_change) {
+      if (row == start_row && col == start_col) {
+      } else {
+        let node = newgrid[stop_row][stop_col];
+        node.isFinish = false;
+        stop_col = col;
+        stop_row = row;
+        node = newgrid[row][col];
+        node.isFinish = true;
+      }
     } else {
-      let node = newgrid[start_row][start_col];
-      node.isStart = false;
-      start_col = col;
-      start_row = row;
-      node = newgrid[row][col];
-      node.isStart = true;
+      if (row == start_row && col == start_col) {
+      } else if (row == stop_row && col == stop_col) {
+      } else {
+        let node = newgrid[row][col];
+        node.isWall = !node.isWall;
+        let y = document.getElementById(`grid-${node.row}-${node.col}`);
+        y.classList.remove("grid-outline");
+      }
     }
-  } else if (stop_change) {
-    if (row == start_row && col == start_col) {
-    } else {
-      let node = newgrid[stop_row][stop_col];
-      node.isFinish = false;
-      stop_col = col;
-      stop_row = row;
-      node = newgrid[row][col];
-      node.isFinish = true;
-    }
-  } else {
-    if (row == start_row && col == start_col) {
-    } else if (row == stop_row && col == stop_col) {
-    } else {
-      let node = newgrid[row][col];
-      node.isWall = !node.isWall;
-      let y = document.getElementById(`grid-${node.row}-${node.col}`);
-      y.classList.remove("grid-outline");
-    }
+    return newgrid;
   }
-  return newgrid;
 }
 
 /*--------------------------------------------------  GRID  END -------------------------------------------------------------*/
@@ -93,53 +96,77 @@ class Grid extends Component {
   }
 
   traverseDijkstra(startnode, finishnode, grid) {
-    animation_working = true;
-    this.linkdisabler(grid);
-    let visitedInOrder = dijkstra(
-      startnode,
-      finishnode,
-      grid,
-      grid_row,
-      grid_col
-    );
+    if (animation_working === false) {
+      console.log("d");
+      this.clearPath(this.state.grid);
+      animation_working = true;
+      this.linkdisabler(grid);
+      let visitedInOrder = dijkstra(
+        startnode,
+        finishnode,
+        grid,
+        grid_row,
+        grid_col
+      );
 
-    const nodesInShortestPathOrder = [];
-    let currentNode = finishnode;
-    while (currentNode.prev_value !== null) {
-      nodesInShortestPathOrder.push(currentNode);
-      currentNode = currentNode.prev_value;
+      const nodesInShortestPathOrder = [];
+      let currentNode = finishnode;
+      while (currentNode.prev_value !== null) {
+        nodesInShortestPathOrder.push(currentNode);
+        currentNode = currentNode.prev_value;
+      }
+      nodesInShortestPathOrder.shift();
+      this.animatePath(visitedInOrder, nodesInShortestPathOrder);
     }
-    nodesInShortestPathOrder.shift();
-    this.animatePath(visitedInOrder, nodesInShortestPathOrder);
   }
   traverseSwarm(startnode, finishnode, grid) {
-    animation_working = true;
-    this.linkdisabler(grid);
-    let visitedInOrder = swarm(startnode, finishnode, grid, grid_row, grid_col);
+    if (animation_working === false) {
+      console.log("s");
+      this.clearPath(this.state.grid);
+      animation_working = true;
+      this.linkdisabler(grid);
+      let visitedInOrder = swarm(
+        startnode,
+        finishnode,
+        grid,
+        grid_row,
+        grid_col
+      );
 
-    const nodesInShortestPathOrder = [];
-    let currentNode = finishnode;
-    while (currentNode.prev_value !== null) {
-      nodesInShortestPathOrder.push(currentNode);
-      currentNode = currentNode.prev_value;
+      const nodesInShortestPathOrder = [];
+      let currentNode = finishnode;
+      while (currentNode.prev_value !== null) {
+        nodesInShortestPathOrder.push(currentNode);
+        currentNode = currentNode.prev_value;
+      }
+      nodesInShortestPathOrder.shift();
+      this.animatePath(visitedInOrder, nodesInShortestPathOrder);
     }
-    nodesInShortestPathOrder.shift();
-    this.animatePath(visitedInOrder, nodesInShortestPathOrder);
   }
 
   traverse_Astar(startnode, finishnode, grid) {
-    animation_working = true;
-    this.linkdisabler(grid);
-    let visitedInOrder = Astar(startnode, finishnode, grid, grid_row, grid_col);
+    if (animation_working === false) {
+      console.log("a");
+      this.clearPath(this.state.grid);
+      animation_working = true;
+      this.linkdisabler(grid);
+      let visitedInOrder = Astar(
+        startnode,
+        finishnode,
+        grid,
+        grid_row,
+        grid_col
+      );
 
-    const nodesInShortestPathOrder = [];
-    let currentNode = finishnode;
-    while (currentNode.prev_value !== null) {
-      nodesInShortestPathOrder.push(currentNode);
-      currentNode = currentNode.prev_value;
+      const nodesInShortestPathOrder = [];
+      let currentNode = finishnode;
+      while (currentNode.prev_value !== null) {
+        nodesInShortestPathOrder.push(currentNode);
+        currentNode = currentNode.prev_value;
+      }
+      nodesInShortestPathOrder.shift();
+      this.animatePath(visitedInOrder, nodesInShortestPathOrder);
     }
-    nodesInShortestPathOrder.shift();
-    this.animatePath(visitedInOrder, nodesInShortestPathOrder);
   }
 
   animatePath(visitedNodesInOrder, nodesInShortestPathOrder) {
@@ -148,7 +175,10 @@ class Grid extends Component {
         setTimeout(() => {
           this.animateShortestPath(nodesInShortestPathOrder);
         }, 10 * i);
-        if (nodesInShortestPathOrder.length === 0) animation_working = false;
+        if (nodesInShortestPathOrder.length === 0) {
+          animation_working = false;
+          this.linkdisabler(this.state.grid);
+        }
         return;
       }
       setTimeout(() => {
@@ -168,139 +198,107 @@ class Grid extends Component {
       }, 50 * i);
     }
     animation_working = false;
+    this.linkdisabler(this.state.grid);
   }
 
   clearBoard(grid) {
-    console.log(grid_row, grid_col);
-    console.log(window.innerWidth, window.innerHeight);
-
-    const newgrid = grid.slice();
-    for (let i = 0; i < grid_row; i++) {
-      for (let j = 0; j < grid_col; j++) {
-        let x = grid[i][j];
-        let y = document.getElementById(`grid-${x.row}-${x.col}`);
-        y.classList.remove("grid-shortest-path");
-        y.classList.remove("grid-visited");
-        y.classList.add("grid-outline");
-        x.isWall = false;
-        y.isWall = false;
-        x.isvisited = false;
-        x.prev_value = null;
-        x.distance = Infinity;
+    if (animation_working === false) {
+      const newgrid = grid.slice();
+      for (let i = 0; i < grid_row; i++) {
+        for (let j = 0; j < grid_col; j++) {
+          let x = grid[i][j];
+          let y = document.getElementById(`grid-${x.row}-${x.col}`);
+          y.classList.remove("grid-shortest-path");
+          y.classList.remove("grid-visited");
+          y.classList.add("grid-outline");
+          x.isWall = false;
+          y.isWall = false;
+          x.isvisited = false;
+          x.prev_value = null;
+          x.distance = Infinity;
+        }
       }
+      this.setState({ grid: newgrid });
     }
-    this.setState({ grid: newgrid });
   }
   clearPath(grid) {
-    console.log(grid_row, grid_col);
-    console.log(window.innerWidth, window.innerHeight);
-
-    const newgrid = grid.slice();
-    for (let i = 0; i < grid_row; i++) {
-      for (let j = 0; j < grid_col; j++) {
-        let x = grid[i][j];
-        let y = document.getElementById(`grid-${x.row}-${x.col}`);
-        y.classList.remove("grid-shortest-path");
-        y.classList.remove("grid-visited");
-        y.classList.add("grid-outline");
-        if (y.isWall || x.isWall) {
-          y.classList.remove("grid-outline");
+    if (animation_working === false) {
+      const newgrid = grid.slice();
+      for (let i = 0; i < grid_row; i++) {
+        for (let j = 0; j < grid_col; j++) {
+          let x = grid[i][j];
+          let y = document.getElementById(`grid-${x.row}-${x.col}`);
+          y.classList.remove("grid-shortest-path");
+          y.classList.remove("grid-visited");
+          y.classList.add("grid-outline");
+          if (y.isWall || x.isWall) {
+            y.classList.remove("grid-outline");
+          }
+          x.isvisited = false;
+          x.prev_value = null;
+          x.distance = Infinity;
         }
-        x.isvisited = false;
-        x.prev_value = null;
-        x.distance = Infinity;
       }
+      this.setState({ grid: newgrid });
     }
-    this.setState({ grid: newgrid });
   }
 
   linkdisabler(grid) {
+    let d_variable, a_variable, s_variable, clear_grid, clear_path;
     if (animation_working === false) {
-      dijkstra_variable = (
-        <a
-          href="#"
-          onClick={() =>
-            this.traverseDijkstra(
-              grid[start_row][start_col],
-              grid[stop_row][stop_col],
-              grid,
-              grid_row,
-              grid_col
-            )
-          }
-        >
-          Dijkstra
-        </a>
-      );
-      astar_variable = (
-        <a
-          href="#"
-          onClick={() =>
-            this.traverse_Astar(
-              grid[start_row][start_col],
-              grid[stop_row][stop_col],
-              grid,
-              grid_row,
-              grid_col
-            )
-          }
-        >
-          Astar
-        </a>
-      );
-      swarm_variable = (
-        <a
-          href="#"
-          onClick={() =>
-            this.traverseSwarm(
-              grid[start_row][start_col],
-              grid[stop_row][stop_col],
-              grid,
-              grid_row,
-              grid_col
-            )
-          }
-        >
-          Swarm
-        </a>
-      );
+      d_variable = "Dijkstra";
+      a_variable = "Astar";
+      s_variable = "Swarm";
+      clear_grid = "clear grid";
+      clear_path = "clear path";
     } else {
-      dijkstra_variable = (
-        <a href="#">
-          <b>D</b>
-        </a>
-      );
-      astar_variable = <a href="#">A</a>;
-      swarm_variable = <a href="#">S</a>;
+      d_variable = <s>Dijkstra</s>;
+      a_variable = <s>Astar</s>;
+      s_variable = <s>Swarm</s>;
+      clear_grid = <s>clear grid</s>;
+      clear_path = <s>clear path</s>;
     }
+    console.log("hi");
+    this.setState({ dijkstra_variable: d_variable });
+    this.setState({ astar_variable: a_variable });
+    this.setState({ swarm_variable: s_variable });
+    this.setState({ cleargrid: clear_grid });
+    this.setState({ clearpath: clear_path });
   }
 
   handleMouseOver(row, col) {
-    if (start_change || stop_change || wall_maker) {
-      const newgrid = gridChanged(this.state.grid, row, col);
-      this.setState({ grid: newgrid });
+    if (animation_working === false) {
+      if (start_change || stop_change || wall_maker) {
+        const newgrid = gridChanged(this.state.grid, row, col);
+        this.setState({ grid: newgrid });
+      }
     }
   }
 
   handleMouseDown(row, col) {
-    if (row == start_row && col == start_col) {
-      start_change = true;
-    } else if (row == stop_row && col == stop_col) {
-      stop_change = true;
-    } else {
-      wall_maker = true;
-      const newgrid = gridChanged(this.state.grid, row, col);
-      this.setState({ grid: newgrid });
+    if (animation_working === false) {
+      this.clearPath(this.state.grid);
+      if (row == start_row && col == start_col) {
+        start_change = true;
+      } else if (row == stop_row && col == stop_col) {
+        stop_change = true;
+      } else {
+        wall_maker = true;
+        const newgrid = gridChanged(this.state.grid, row, col);
+        this.setState({ grid: newgrid });
+      }
     }
   }
 
   handleMouseUp() {
-    if (start_change) {
-      start_change = false;
-    } else if (stop_change) {
-      stop_change = false;
-    } else {
-      wall_maker = false;
+    if (animation_working === false) {
+      if (start_change) {
+        start_change = false;
+      } else if (stop_change) {
+        stop_change = false;
+      } else {
+        wall_maker = false;
+      }
     }
   }
   /*-----------------------------------------RENDERING START-----------------------------------------------------------------*/
@@ -332,34 +330,80 @@ class Grid extends Component {
     stop_row = Math.floor(grid_row / 2);
     const newgrid = gridMaker();
     this.setState({ grid: newgrid });
-
-    console.log(update_height, update_width);
   }
 
   componentDidMount() {
     this.updateDimensions();
-    // this.setState({ grid });
+    this.linkdisabler(this.state.grid);
+
     window.addEventListener("resize", this.updateDimensions.bind(this));
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
+
   /*----------------------------------------------------------------------------------------------*/
 
   render() {
-    const { grid } = this.state;
-    this.linkdisabler(this.state.grid);
+    const {
+      grid,
+      dijkstra_variable,
+      astar_variable,
+      swarm_variable,
+      cleargrid,
+      clearpath,
+    } = this.state;
+
     return (
       <div className="position">
         <div className="topnav" id="nav">
-          {dijkstra_variable}
-          {astar_variable}
-          {swarm_variable}
+          <a
+            href="#"
+            onClick={() =>
+              this.traverseDijkstra(
+                grid[start_row][start_col],
+                grid[stop_row][stop_col],
+                grid,
+                grid_row,
+                grid_col
+              )
+            }
+          >
+            {dijkstra_variable}
+          </a>
+          <a
+            href="#"
+            onClick={() =>
+              this.traverse_Astar(
+                grid[start_row][start_col],
+                grid[stop_row][stop_col],
+                grid,
+                grid_row,
+                grid_col
+              )
+            }
+          >
+            {astar_variable}
+          </a>
+          <a
+            href="#"
+            onClick={() =>
+              this.traverseSwarm(
+                grid[start_row][start_col],
+                grid[stop_row][stop_col],
+                grid,
+                grid_row,
+                grid_col
+              )
+            }
+          >
+            {swarm_variable}
+          </a>
           <a href="#" onClick={() => this.clearBoard(grid)}>
-            clear grid
+            {cleargrid}
           </a>
           <a href="#" onClick={() => this.clearPath(grid)}>
-            clear path
+            {clearpath}
           </a>
         </div>
 
