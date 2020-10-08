@@ -19,7 +19,7 @@ function updateNeighbor(cur_node, grid, grid_row, grid_col, finishnode) {
 
 function getNeighbor(node, grid, grid_row, grid_col) {
   let neighbor = [];
-  console.log(grid_row, grid_col);
+
   let r = node.row;
   let c = node.col;
   if (r + 1 < grid_row) {
@@ -52,7 +52,10 @@ export function swarm(startnode, finishnode, grid, grid_row, grid_col) {
     let cur_node = unvisited_grid.shift();
     if (cur_node.isWall) continue;
 
-    if (cur_node.distance == Infinity) break;
+    if (cur_node.distance == Infinity) {
+      visitedInOrder.shift();
+      break;
+    }
     cur_node.isvisited = true;
     visitedInOrder.push(cur_node);
     if (cur_node == finishnode) {
