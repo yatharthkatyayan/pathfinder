@@ -298,6 +298,17 @@ class Grid extends Component {
       }
     }
   }
+
+  handleClickOutside = (event) => {
+    if (
+      this.container.current &&
+      !this.container.current.contains(event.target)
+    ) {
+      this.setState({
+        open: false,
+      });
+    }
+  };
   /*-----------------------------------------RENDERING START-----------------------------------------------------------------*/
   /*
   componentDidMount() {
@@ -329,14 +340,32 @@ class Grid extends Component {
     this.setState({ grid: newgrid });
   }
 
+  state = {
+    open: false,
+  };
+  handleButtonClick = () => {
+    this.setState((state) => {
+      return {
+        open: !state.open,
+      };
+    });
+  };
+
+  container = React.createRef();
+  state = {
+    open: false,
+  };
+
   componentDidMount() {
     this.updateDimensions();
     this.linkdisabler(this.state.grid);
 
     window.addEventListener("resize", this.updateDimensions.bind(this));
+    document.addEventListener("mousedown", this.handleClickOutside); //+
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions.bind(this));
+    document.removeEventListener("mousedown", this.handleClickOutside);
   }
 
   /*----------------------------------------------------------------------------------------------*/
@@ -353,55 +382,83 @@ class Grid extends Component {
 
     return (
       <div className="position">
-        <div className="topnav" id="nav">
-          <a
+        <div className="container" id="nav" ref={this.container}>
+          <button type="button" class="button" onClick={this.handleButtonClick}>
+            ☰ Algorithms
+          </button>
+          {this.state.open && (
+            <div class="dropdown">
+              <ul>
+                <li>
+                  <a
+                    class="anch"
+                    href="#"
+                    onClick={() =>
+                      this.traverseDijkstra(
+                        grid[start_row][start_col],
+                        grid[stop_row][stop_col],
+                        grid,
+                        grid_row,
+                        grid_col
+                      )
+                    }
+                  >
+                    {dijkstra_variable}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="anch"
+                    href="#"
+                    onClick={() =>
+                      this.traverse_Astar(
+                        grid[start_row][start_col],
+                        grid[stop_row][stop_col],
+                        grid,
+                        grid_row,
+                        grid_col
+                      )
+                    }
+                  >
+                    {astar_variable}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="anch"
+                    href="#"
+                    onClick={() =>
+                      this.traverseSwarm(
+                        grid[start_row][start_col],
+                        grid[stop_row][stop_col],
+                        grid,
+                        grid_row,
+                        grid_col
+                      )
+                    }
+                  >
+                    {swarm_variable}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          )}
+          <button
+            type="button"
+            class="button"
             href="#"
-            onClick={() =>
-              this.traverseDijkstra(
-                grid[start_row][start_col],
-                grid[stop_row][stop_col],
-                grid,
-                grid_row,
-                grid_col
-              )
-            }
+            onClick={() => this.clearBoard(grid)}
           >
-            {dijkstra_variable}
-          </a>
-          <a
-            href="#"
-            onClick={() =>
-              this.traverse_Astar(
-                grid[start_row][start_col],
-                grid[stop_row][stop_col],
-                grid,
-                grid_row,
-                grid_col
-              )
-            }
-          >
-            {astar_variable}
-          </a>
-          <a
-            href="#"
-            onClick={() =>
-              this.traverseSwarm(
-                grid[start_row][start_col],
-                grid[stop_row][stop_col],
-                grid,
-                grid_row,
-                grid_col
-              )
-            }
-          >
-            {swarm_variable}
-          </a>
-          <a href="#" onClick={() => this.clearBoard(grid)}>
             {cleargrid}
-          </a>
-          <a href="#" onClick={() => this.clearPath(grid)}>
+          </button>
+          <button
+            type="button"
+            class="button"
+            href="#"
+            onClick={() => this.clearPath(grid)}
+          >
             {clearpath}
-          </a>
+          </button>
         </div>
 
         <div className="grid button ">
