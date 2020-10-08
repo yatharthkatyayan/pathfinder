@@ -15,7 +15,10 @@ let unvisited_grid = [];
 let grid_row = 20;
 let grid_col = 50;
 let nav_height = 0;
-
+let animation_working = false;
+let dijkstra_variable;
+let astar_variable;
+let swarm_variable;
 /*----------------------------------------------- GRID START----------------------------------------------------------------*/
 
 function gridMaker() {
@@ -90,6 +93,8 @@ class Grid extends Component {
   }
 
   traverseDijkstra(startnode, finishnode, grid) {
+    animation_working = true;
+    this.linkdisabler(grid);
     let visitedInOrder = dijkstra(
       startnode,
       finishnode,
@@ -108,6 +113,8 @@ class Grid extends Component {
     this.animatePath(visitedInOrder, nodesInShortestPathOrder);
   }
   traverseSwarm(startnode, finishnode, grid) {
+    animation_working = true;
+    this.linkdisabler(grid);
     let visitedInOrder = swarm(startnode, finishnode, grid, grid_row, grid_col);
 
     const nodesInShortestPathOrder = [];
@@ -121,6 +128,8 @@ class Grid extends Component {
   }
 
   traverse_Astar(startnode, finishnode, grid) {
+    animation_working = true;
+    this.linkdisabler(grid);
     let visitedInOrder = Astar(startnode, finishnode, grid, grid_row, grid_col);
 
     const nodesInShortestPathOrder = [];
@@ -139,6 +148,7 @@ class Grid extends Component {
         setTimeout(() => {
           this.animateShortestPath(nodesInShortestPathOrder);
         }, 10 * i);
+        if (nodesInShortestPathOrder.length === 0) animation_working = false;
         return;
       }
       setTimeout(() => {
@@ -157,6 +167,7 @@ class Grid extends Component {
           "grid-block grid-shortest-path";
       }, 50 * i);
     }
+    animation_working = false;
   }
 
   clearBoard(grid) {
@@ -203,6 +214,67 @@ class Grid extends Component {
     this.setState({ grid: newgrid });
   }
 
+  linkdisabler(grid) {
+    if (animation_working === false) {
+      dijkstra_variable = (
+        <a
+          href="#"
+          onClick={() =>
+            this.traverseDijkstra(
+              grid[start_row][start_col],
+              grid[stop_row][stop_col],
+              grid,
+              grid_row,
+              grid_col
+            )
+          }
+        >
+          Dijkstra
+        </a>
+      );
+      astar_variable = (
+        <a
+          href="#"
+          onClick={() =>
+            this.traverse_Astar(
+              grid[start_row][start_col],
+              grid[stop_row][stop_col],
+              grid,
+              grid_row,
+              grid_col
+            )
+          }
+        >
+          Astar
+        </a>
+      );
+      swarm_variable = (
+        <a
+          href="#"
+          onClick={() =>
+            this.traverseSwarm(
+              grid[start_row][start_col],
+              grid[stop_row][stop_col],
+              grid,
+              grid_row,
+              grid_col
+            )
+          }
+        >
+          Swarm
+        </a>
+      );
+    } else {
+      dijkstra_variable = (
+        <a href="#">
+          <b>D</b>
+        </a>
+      );
+      astar_variable = <a href="#">A</a>;
+      swarm_variable = <a href="#">S</a>;
+    }
+  }
+
   handleMouseOver(row, col) {
     if (start_change || stop_change || wall_maker) {
       const newgrid = gridChanged(this.state.grid, row, col);
@@ -246,11 +318,10 @@ class Grid extends Component {
     this.setState({ grid });
   }
 */
-  /*----------------------------------------------------------------------------------*/
+
   updateDimensions() {
     let update_width = window.innerWidth;
     let update_height = window.innerHeight;
-    /*---------------------------------------*/
 
     nav_height = document.getElementById("nav").clientHeight;
     grid_row = Math.floor((update_height - nav_height) / 25);
@@ -260,23 +331,16 @@ class Grid extends Component {
     stop_col = grid_col - 1;
     stop_row = Math.floor(grid_row / 2);
     const newgrid = gridMaker();
-    console.log("hi");
     this.setState({ grid: newgrid });
-    /*-------------------------------------------------*/
+
     console.log(update_height, update_width);
   }
-  /**
-   * Add event listener
-   */
+
   componentDidMount() {
     this.updateDimensions();
     // this.setState({ grid });
     window.addEventListener("resize", this.updateDimensions.bind(this));
   }
-
-  /**
-   * Remove event listener
-   */
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
@@ -284,51 +348,13 @@ class Grid extends Component {
 
   render() {
     const { grid } = this.state;
+    this.linkdisabler(this.state.grid);
     return (
       <div className="position">
         <div className="topnav" id="nav">
-          <a
-            href="#"
-            onClick={() =>
-              this.traverseDijkstra(
-                grid[start_row][start_col],
-                grid[stop_row][stop_col],
-                grid,
-                grid_row,
-                grid_col
-              )
-            }
-          >
-            Dijkstra
-          </a>
-          <a
-            href="#"
-            onClick={() =>
-              this.traverse_Astar(
-                grid[start_row][start_col],
-                grid[stop_row][stop_col],
-                grid,
-                grid_row,
-                grid_col
-              )
-            }
-          >
-            A star
-          </a>
-          <a
-            href="#"
-            onClick={() =>
-              this.traverseSwarm(
-                grid[start_row][start_col],
-                grid[stop_row][stop_col],
-                grid,
-                grid_row,
-                grid_col
-              )
-            }
-          >
-            Swarm
-          </a>
+          {dijkstra_variable}
+          {astar_variable}
+          {swarm_variable}
           <a href="#" onClick={() => this.clearBoard(grid)}>
             clear grid
           </a>
