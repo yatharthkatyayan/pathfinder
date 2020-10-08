@@ -180,6 +180,28 @@ class Grid extends Component {
     }
     this.setState({ grid: newgrid });
   }
+  clearPath(grid) {
+    console.log(grid_row, grid_col);
+    console.log(window.innerWidth, window.innerHeight);
+
+    const newgrid = grid.slice();
+    for (let i = 0; i < grid_row; i++) {
+      for (let j = 0; j < grid_col; j++) {
+        let x = grid[i][j];
+        let y = document.getElementById(`grid-${x.row}-${x.col}`);
+        y.classList.remove("grid-shortest-path");
+        y.classList.remove("grid-visited");
+        y.classList.add("grid-outline");
+        if (y.isWall || x.isWall) {
+          y.classList.remove("grid-outline");
+        }
+        x.isvisited = false;
+        x.prev_value = null;
+        x.distance = Infinity;
+      }
+    }
+    this.setState({ grid: newgrid });
+  }
 
   handleMouseOver(row, col) {
     if (start_change || stop_change || wall_maker) {
@@ -309,6 +331,9 @@ class Grid extends Component {
           </a>
           <a href="#" onClick={() => this.clearBoard(grid)}>
             clear grid
+          </a>
+          <a href="#" onClick={() => this.clearPath(grid)}>
+            clear path
           </a>
         </div>
 
