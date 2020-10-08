@@ -461,7 +461,7 @@ class Grid extends Component {
           </button>
         </div>
 
-        <div className="grid button ">
+        <div className="grid unselect">
           {grid.map((row, rowIdx) => {
             return (
               <div key={rowIdx} className="col">

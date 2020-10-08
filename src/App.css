@@ -67,12 +67,12 @@
     background-color: rgb(255, 254, 106);
   }
 }
-/*------------
+
 .grid {
   margin-left: 5px;
   margin-right: 5px;
 }
----------------*/
+
 .grid-block {
   width: 25px;
   height: 25px;
@@ -123,7 +123,7 @@
   height: fit-content;
 }
 ***/
-.button {
+.unselect {
   user-select: none;
   -moz-user-select: none;
   -khtml-user-select: none;
