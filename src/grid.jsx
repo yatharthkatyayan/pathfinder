@@ -210,15 +210,55 @@ class Grid extends Component {
     }
   }
   /*-----------------------------------------RENDERING START-----------------------------------------------------------------*/
+  /*
   componentDidMount() {
     nav_height = document.getElementById("nav").clientHeight;
     grid_row = Math.floor((window.innerHeight - nav_height) / 25);
     grid_col = Math.floor(window.innerWidth / 25);
-
+    start_col = 0;
+    start_row = Math.floor(grid_row / 2);
+    stop_col = grid_col - 1;
+    stop_row = Math.floor(grid_row / 2);
     const grid = gridMaker();
 
     this.setState({ grid });
   }
+*/
+  /*----------------------------------------------------------------------------------*/
+  updateDimensions() {
+    let update_width = window.innerWidth;
+    let update_height = window.innerHeight;
+    /*---------------------------------------*/
+
+    nav_height = document.getElementById("nav").clientHeight;
+    grid_row = Math.floor((update_height - nav_height) / 25);
+    grid_col = Math.floor(update_width / 25);
+    start_col = 0;
+    start_row = Math.floor(grid_row / 2);
+    stop_col = grid_col - 1;
+    stop_row = Math.floor(grid_row / 2);
+    const newgrid = gridMaker();
+    console.log("hi");
+    this.setState({ grid: newgrid });
+    /*-------------------------------------------------*/
+    console.log(update_height, update_width);
+  }
+  /**
+   * Add event listener
+   */
+  componentDidMount() {
+    this.updateDimensions();
+    // this.setState({ grid });
+    window.addEventListener("resize", this.updateDimensions.bind(this));
+  }
+
+  /**
+   * Remove event listener
+   */
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions.bind(this));
+  }
+  /*----------------------------------------------------------------------------------------------*/
 
   render() {
     const { grid } = this.state;
