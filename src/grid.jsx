@@ -181,6 +181,7 @@ class Grid extends Component {
         }
         return;
       }
+
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
         document.getElementById(`grid-${node.row}-${node.col}`).className =
@@ -206,7 +207,7 @@ class Grid extends Component {
       const newgrid = grid.slice();
       for (let i = 0; i < grid_row; i++) {
         for (let j = 0; j < grid_col; j++) {
-          let x = grid[i][j];
+          let x = newgrid[i][j];
           let y = document.getElementById(`grid-${x.row}-${x.col}`);
           y.classList.remove("grid-shortest-path");
           y.classList.remove("grid-visited");
@@ -226,7 +227,7 @@ class Grid extends Component {
       const newgrid = grid.slice();
       for (let i = 0; i < grid_row; i++) {
         for (let j = 0; j < grid_col; j++) {
-          let x = grid[i][j];
+          let x = newgrid[i][j];
           let y = document.getElementById(`grid-${x.row}-${x.col}`);
           y.classList.remove("grid-shortest-path");
           y.classList.remove("grid-visited");
@@ -242,21 +243,43 @@ class Grid extends Component {
       this.setState({ grid: newgrid });
     }
   }
-
+  randomMaze(grid) {
+    if (animation_working === false) {
+      const newgrid = grid.slice();
+      this.clearBoard(grid);
+      for (let i = 0; i < grid_row; i++) {
+        for (let j = 0; j < grid_col; j++) {
+          let x = newgrid[i][j];
+          let y = document.getElementById(`grid-${x.row}-${x.col}`);
+          if (Math.random() > 0.7) {
+            if (x.isStart == false && x.isFinish == false) {
+              x.isWall = !x.isWall;
+              y.isWall = !y.isWall;
+            }
+            y.classList.remove("grid-outline");
+          }
+        }
+      }
+      this.setState({ grid: newgrid });
+      animation_working = false;
+    }
+  }
   linkdisabler(grid) {
-    let d_variable, a_variable, s_variable, clear_grid, clear_path;
+    let d_variable, a_variable, s_variable, clear_grid, clear_path, r_maze;
     if (animation_working === false) {
       d_variable = "Dijkstra";
       a_variable = "Astar";
       s_variable = "Swarm";
       clear_grid = "clear grid";
       clear_path = "clear path";
+      r_maze = "random maze";
     } else {
       d_variable = <s>Dijkstra</s>;
       a_variable = <s>Astar</s>;
       s_variable = <s>Swarm</s>;
       clear_grid = <s>clear grid</s>;
       clear_path = <s>clear path</s>;
+      r_maze = <s>random maze</s>;
     }
 
     this.setState({ dijkstra_variable: d_variable });
@@ -264,6 +287,7 @@ class Grid extends Component {
     this.setState({ swarm_variable: s_variable });
     this.setState({ cleargrid: clear_grid });
     this.setState({ clearpath: clear_path });
+    this.setState({ randommaze: r_maze });
   }
 
   handleMouseOver(row, col) {
@@ -381,6 +405,7 @@ class Grid extends Component {
       swarm_variable,
       cleargrid,
       clearpath,
+      randommaze,
     } = this.state;
 
     return (
@@ -446,6 +471,14 @@ class Grid extends Component {
               </ul>
             </div>
           )}
+          <button
+            type="button"
+            class="button"
+            href="#"
+            onClick={() => this.randomMaze(grid)}
+          >
+            {randommaze}
+          </button>
           <button
             type="button"
             class="button"

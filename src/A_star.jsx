@@ -74,6 +74,7 @@ export function Astar(startnode, finishnode, grid, grid_row, grid_col) {
       visitedInOrder.pop();
       break;
     }
+
     updateNeighbor(cur_node, grid, grid_row, grid_col);
   }
   return visitedInOrder;
