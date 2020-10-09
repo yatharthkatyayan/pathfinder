@@ -116,6 +116,7 @@ class Grid extends Component {
         currentNode = currentNode.prev_value;
       }
       nodesInShortestPathOrder.shift();
+      console.log("dijkstra path length :", nodesInShortestPathOrder.length);
       this.animatePath(visitedInOrder, nodesInShortestPathOrder);
     }
   }
@@ -140,6 +141,7 @@ class Grid extends Component {
         currentNode = currentNode.prev_value;
       }
       nodesInShortestPathOrder.shift();
+      console.log("swarm path length :", nodesInShortestPathOrder.length);
       this.animatePath(visitedInOrder, nodesInShortestPathOrder);
     }
   }
@@ -165,6 +167,7 @@ class Grid extends Component {
         currentNode = currentNode.prev_value;
       }
       nodesInShortestPathOrder.shift();
+      console.log("astar path length :", nodesInShortestPathOrder.length);
       this.animatePath(visitedInOrder, nodesInShortestPathOrder);
     }
   }
