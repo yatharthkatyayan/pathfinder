@@ -387,11 +387,13 @@ class Grid extends Component {
   };
 
   componentDidMount() {
+    const grid = gridMaker();
+    this.setState({ grid });
     this.updateDimensions();
     this.linkdisabler(this.state.grid);
 
     window.addEventListener("resize", this.updateDimensions.bind(this));
-    document.addEventListener("mousedown", this.handleClickOutside); //+
+    document.addEventListener("mousedown", this.handleClickOutside);
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions.bind(this));
